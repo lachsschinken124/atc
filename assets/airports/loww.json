@@ -543,7 +543,7 @@
       "type": "surge",
       "entrail": [12, 22],
       "frequency": 15,
-     // "route":   "MABOD.MABOD.LOWW",
+      "route":   "MABOD.MABOD.LOWW",
       "altitude":  10000
     },
     {
