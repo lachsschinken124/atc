@@ -543,6 +543,7 @@
       "type": "surge",
       "entrail": [12, 22],
       "frequency": 15,
+      "route":   "MABOD.MABOD.LOWW",
       "altitude":  10000
     },
     {
@@ -556,6 +557,7 @@
       ],
       "type": "random",
       "frequency": 5,
+      "route":   "PESAT.PESAT.LOWW",
       "altitude":  10000
     },
     {
@@ -570,6 +572,7 @@
       "type": "surge",
       "entrail": [15, 30],
       "frequency": 12,
+      "route":   "BALAD.BALAD.LOWW",
       "altitude":  10000
     },
     {
@@ -589,6 +592,7 @@
       ],
       "type": "random",
       "frequency": 5,
+      "route":   "NERDU.NERDU.LOWW",
       "altitude":  10000
     }
   ]
