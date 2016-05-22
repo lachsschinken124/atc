@@ -499,7 +499,7 @@
     }
   },
   "stars": {
-    "NERDU 4K": {
+    "NERDU": {
       "icao": "NERDU",
       "name": "Nerdu",
       "suffix": {"11":"4K", "29":"4M", "16":"6L", "34":"4N"},
@@ -618,11 +618,9 @@
         ["ezy", 5],
         ["ber", 10]
       ],
-      "type": "random",
-      "actualtype": "surge",
+      "type": "surge",
       "entrail": [15, 30],
-      "frequency": 30,
-      "actualfrequency": 12,
+      "frequency": 12,
       "altitude": 10000
     },
     {
