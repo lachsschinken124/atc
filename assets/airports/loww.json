@@ -125,7 +125,8 @@
     },
     {
       "name": "LOR-15 Wien",
-      "height": "3500ft",
+      "height": "1500ft",
+      "actualheight": "10000ft",
       "coordinates": [
         ["N48.2722222222","E16.2944444444"],
         ["N48.2833333333","E16.3833333333"],
@@ -682,7 +683,7 @@
     {
       "_name":  "PESAT",
       "speed":    250,
-      "fixes":   ["_NATEX080019", "NATEX", "PESAT"],
+      "fixes":   ["_NATEX080019", "NATEX", "PESAT", "WW991"],
       "airlines":  [
         ["aua", 5],
         ["ezy", 5],
