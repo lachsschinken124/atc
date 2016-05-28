@@ -17,8 +17,8 @@
   "rr_center": ["N48d6m37.07", "E16d34m10.92"],
   "has_terrain": false,
   "wind": {
-    "angle": 140,
-    "speed": 7
+    "angle": 200,
+    "speed": 5
   },
   "airspace": [
     {
