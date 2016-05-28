@@ -1175,7 +1175,6 @@ function airport_init() {
   airport_load("ksea");
   airport_load("ksfo");
   airport_load("loww");
-  airport_load("loww2020");
   airport_load("ltba");
   airport_load("saez");
   airport_load("sbgl");
