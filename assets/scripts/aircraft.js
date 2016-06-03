@@ -1972,7 +1972,7 @@ var Aircraft=Fiber.extend(function() {
       else return [true, "unable to clear as filed"];
     },
     runClimbViaSID: function() {
-      if(!(this.fms.currentLeg().type == "sid")) var fail = true;
+      if(!this.fms.currentLeg().type == "sid") var fail = true;
       else if(this.fms.climbViaSID())
         return ['ok', {log: "climb via the " + this.fms.currentLeg().route.split('.')[1] + " departure",
           say: "climb via the " + airport_get().sids[this.fms.currentLeg().route.split('.')[1]].name + " departure"}];
@@ -2499,20 +2499,19 @@ var Aircraft=Fiber.extend(function() {
     callUp: function() {
       if(this.category == "arrival") {
         var altdiff = this.altitude - this.fms.currentWaypoint().altitude;
-        var alt = digits_decimal(this.altitude, -2);
         if(Math.abs(altdiff) > 200) {
           if(altdiff > 0) {
-            var alt_log = "descending through " + alt + " for " + this.target.altitude;
-            var alt_say = "descending through " + radio_altitude(alt) + " for " + radio_altitude(this.target.altitude);
+            var alt_log = "descending through " + this.altitude + " for " + this.target.altitude;
+            var alt_say = "descending through " + radio_altitude(this.altitude) + " for " + radio_altitude(this.target.altitude);
           }
           else if(altdiff < 0) {
-            var alt_log = " climbing through " + alt + " for " + this.target.altitude;
-            var alt_say = " climbing through " + radio_altitude(alt) + " for " + radio_altitude(this.target.altitude);
+            var alt_log = " climbing through " + this.altitude + " for " + this.target.altitude;
+            var alt_say = " climbing through " + radio_altitude(this.altitude) + " for " + radio_altitude(this.target.altitude);
           }
         }
         else {
-          var alt_log = "at " + alt;
-          var alt_say = "at " + radio_altitude(alt);
+          var alt_log = "at " + this.altitude;
+          var alt_say = "at " + radio_altitude(this.altitude);
         }
         ui_log(airport_get().radio.app + ", " + this.getCallsign() + " with you " + alt_log);
         speech_say([ {type:"text", content:airport_get().radio.app+", "}, {type:"callsign", content:this}, {type:"text", content:"with you " + alt_say} ]);
@@ -2640,10 +2639,9 @@ var Aircraft=Fiber.extend(function() {
           this.target.speed = 0;
         }
       } else if(this.fms.currentWaypoint().navmode == "fix") {
-        var fix = this.fms.currentWaypoint().location;
-        if(!fix) console.error(this.getCallsign()+" using 'fix' navmode, but no fix location!"+this.fms);
-        var vector_to_fix = vsub(this.position, fix);
-        var distance_to_fix = distance2d(this.position, fix);
+        var fix = this.fms.currentWaypoint().location,
+            vector_to_fix = vsub(this.position, fix),
+            distance_to_fix = distance2d(this.position, fix);
         if((distance_to_fix < 1) ||
           ((distance_to_fix < 10) && (distance_to_fix < aircraft_turn_initiation_distance(this, fix)))) {
           if(!this.fms.atLastWaypoint()) { // if there are more waypoints available
