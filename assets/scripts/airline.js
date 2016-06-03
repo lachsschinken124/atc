@@ -177,11 +177,9 @@ function airline_init() {
   airline_load("EZY");
   airline_load("FAB");
   airline_load("FASTGA");
-  airline_load("FDB");
   airline_load("FDX");
   airline_load("FFT");
   airline_load("FLG");
-  airline_load("FWI");
   airline_load("GIA");
   airline_load("GJS");
   airline_load("GLO");
@@ -192,7 +190,6 @@ function airline_init() {
   airline_load("IAD");
   airline_load("IBE");
   airline_load("IGO");
-  airline_load("INC");
   airline_load("JAI");
   airline_load("JAL");
   airline_load("JBU");
@@ -212,7 +209,6 @@ function airline_init() {
   airline_load("ONE");
   airline_load("PAA");
   airline_load("PDT");
-  airline_load("QFA");
   airline_load("QXE");
   airline_load("RFF");
   airline_load("RLU");
@@ -245,7 +241,6 @@ function airline_init() {
   airline_load("VIR");
   airline_load("VRD");
   airline_load("VTI");
-  airline_load("WIA");
   airline_load("XAX");
 }
 
