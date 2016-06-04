@@ -833,6 +833,7 @@
       "altitude": 10000
     },
     {
+      "_name": "LANUX",
       "type": "random",
       "route":   "LANUX.LANUX6W.NERDU",
       "frequency": 2,
@@ -848,9 +849,10 @@
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
-      ],
+      ]
     },
     {
+      "_name": "VENEN",
       "type": "random",
       "route":   "VENEN.VENEN2W.NERDU",
       "frequency": 2,
@@ -866,9 +868,10 @@
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
-      ],
+      ]
     },
     {
+      "_name": "LNZ",
       "type": "random",
       "route":   "LNZ.LNZ8W.NERDU",
       "frequency": 2,
@@ -886,5 +889,7 @@
         ["gwi", 5]
       ]
     }
+    
   ]
+}
 }
