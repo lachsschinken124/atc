@@ -144,14 +144,17 @@ function airline_init() {
   airline_load("AMX");
   airline_load("ARG");
   airline_load("ASA");
+  airline_load("ASL");
   airline_load("ASQ");
   airline_load("AUA");
+  airline_load("AUI");
   airline_load("AVA");
   airline_load("AWE");
   airline_load("AWI");
   airline_load("AWQ");
   airline_load("AXB");
   airline_load("AZA");
+  airline_load("AZQ");
   airline_load("AZU");
   airline_load("BAW");
   airline_load("BCY");

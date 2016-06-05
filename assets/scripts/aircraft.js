@@ -3237,6 +3237,7 @@ function aircraft_init() {
 
   // FOKKER
   aircraft_load("f50" );
+  aircraft_load("f70" );
   aircraft_load("f100");
 
   // GENERAL AVIATION

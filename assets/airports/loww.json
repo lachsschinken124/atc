@@ -811,9 +811,13 @@
       ["afr", 3],
       ["aic/long", 1],
       ["amc", 1],
-      ["aua", 20],
+      ["asl", 2],
+      ["aua", 165],
+      ["aua/long", 10],
+      ["aui", 2],
+      ["azq", 2],
+      ["baw", 6],
       ["ber", 15],
-      ["baw", 5],
       ["dlh", 10],
       ["ein", 1],
       ["ryr", 1],
@@ -837,14 +841,13 @@
       "route":    "MIKOV.MIKOV7W.LOWW",
       "airlines":  [
         ["aua", 10],
+        ["aua/long", 2],
         ["ber", 10],
         ["dlh", 10],
         ["gwi", 10],
         ["sas", 5],
         ["ezy", 7],
-        ["ual/long", 5],
-        ["aca/long", 5],
-        ["aal/long", 5]
+        ["ual/long", 5]
       ],
       "type": "surge",
       "entrail": [12, 22],
@@ -857,6 +860,7 @@
       "route":   "NATEX.NATEX1W.LOWW",
       "airlines":  [
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 5],
         ["ber", 10]
       ],
@@ -871,6 +875,7 @@
       "route":    "XANUT.XANUT1W.LOWW",
       "airlines":  [
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 5],
         ["ber", 10]
       ],
@@ -890,6 +895,7 @@
         ["dlh", 3],
         ["klm", 1],
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
@@ -909,6 +915,7 @@
         ["dlh", 3],
         ["klm", 1],
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
@@ -928,6 +935,7 @@
         ["dlh", 3],
         ["klm", 1],
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
@@ -947,6 +955,7 @@
         ["dlh", 3],
         ["klm", 1],
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
