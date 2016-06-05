@@ -804,6 +804,13 @@
    },
   "departures": {
     "airlines": [
+      ["aar/cargo", 2],
+      ["adr", 5],
+      ["aee", 2],
+      ["afl", 3],
+      ["afr", 3],
+      ["aic/long", 1],
+      ["amc", 1],
       ["aua", 20],
       ["ber", 15],
       ["baw", 5],
@@ -813,8 +820,6 @@
       ["gwi", 10],
       ["klm", 5],
       ["ezy", 8],
-      ["aal/long", 3],
-      ["aca/long", 3],
       ["sas", 5],
       ["ual/long", 5]
     ],
@@ -843,7 +848,7 @@
       ],
       "type": "surge",
       "entrail": [12, 22],
-      "frequency": 15,
+      "frequency": 25,
       "altitude":  25000
     },
     {
@@ -871,7 +876,7 @@
       ],
       "type": "surge",
       "entrail": [15, 30],
-      "frequency": 12,
+      "frequency": 20,
       "altitude": 25000
     },
     {

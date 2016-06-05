@@ -131,12 +131,16 @@ zlsa.atc.Airline = Fiber.extend(function() {
 
 function airline_init() {
   airline_load("AAL");
+  airline_load("AAR");
   airline_load("ACA");
+  airline_load("ADR");
   airline_load("AEA");
+  airline_load("AEE");
   airline_load("AFL");
   airline_load("AFR");
   airline_load("AIC");
   airline_load("AIRTAXI");
+  airline_load("AMC");
   airline_load("AMX");
   airline_load("ARG");
   airline_load("ASA");

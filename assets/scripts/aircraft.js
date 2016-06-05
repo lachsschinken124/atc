@@ -3279,6 +3279,7 @@ function aircraft_init() {
   aircraft_load("d328");
   aircraft_load("dhc6");
   aircraft_load("sf34");
+  aircraft_load("su95");
 }
 
 function aircraft_generate_callsign(airline_name) {
