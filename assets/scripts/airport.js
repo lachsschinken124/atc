@@ -1167,10 +1167,12 @@ function airport_init() {
   airport_load("eidw");
   airport_load("einn");
   airport_load("engm");
+  airport_load("kbos");
   airport_load("kdca");
   airport_load("kjfk");
   airport_load("klax");
   airport_load("klax90");
+  airport_load("kmia");
   airport_load("kmsp");
   airport_load("ksan");
   airport_load("ksea");
