@@ -1135,7 +1135,8 @@ var Airport=Fiber.extend(function() {
       }
 
       // Get (unique) list of fixes used that are not in 'this.fixes'
-      var missing = fixes.filter(function(f){return !this.fixes.hasOwnProperty(f);}).sort();
+      var apt = this;
+      var missing = fixes.filter(function(f){return !apt.fixes.hasOwnProperty(f);}).sort();
       for(var i=0; i<missing.length-1; i++)
         if(missing[i] == missing[i+1]) missing.splice(i,1); // remove duplicates
       if(missing.length > 0) {  // there are some... yell at the airport designer!!! :)
@@ -1166,10 +1167,12 @@ function airport_init() {
   airport_load("eidw");
   airport_load("einn");
   airport_load("engm");
+  airport_load("kbos");
   airport_load("kdca");
   airport_load("kjfk");
   airport_load("klax");
   airport_load("klax90");
+  airport_load("kmia");
   airport_load("kmsp");
   airport_load("ksan");
   airport_load("ksea");
@@ -1177,10 +1180,13 @@ function airport_init() {
   airport_load("loww");
   airport_load("loww2020");
   airport_load("ltba");
+  airport_load("omdb");
   airport_load("saez");
   airport_load("sbgl");
   airport_load("sbgr");
+  airport_load("tncm");
   airport_load("uudd");
+  airport_load("vecc");
   airport_load("vhhh");
   airport_load("vidp");
   airport_load("wiii");
@@ -1232,6 +1238,7 @@ function airport_set(icao) {
     .text(prop.airport.current.icao.toUpperCase())
     .attr("title", airport.name);
 
+  prop.canvas.draw_labels = true;
   $('.toggle-labels').toggle(
     !$.isEmptyObject(prop.airport.current.maps));
 
