@@ -3241,6 +3241,7 @@ function aircraft_init() {
 
   // FOKKER
   aircraft_load("f50" );
+  aircraft_load("f70" );
   aircraft_load("f100");
 
   // GENERAL AVIATION
@@ -3283,6 +3284,7 @@ function aircraft_init() {
   aircraft_load("d328");
   aircraft_load("dhc6");
   aircraft_load("sf34");
+  aircraft_load("su95");
 }
 
 function aircraft_generate_callsign(airline_name) {

@@ -189,6 +189,8 @@
     "_NATEX080019": ["N47d46.81m0", "E017d58.01m0"],
     "_NIGSI202010": ["N47d13.05m0", "E015d56.09m0"],
     "_MASUR272009": ["N48d31.88m0", "E015d12.85m0"],
+    "_LANUX140000": ["N49.148622", "E15.432974"],
+    "_REKLU262000": ["N48d37m29.9", "E17d38m22.1"],
     "WGM":   ["N48d19m25.88", "E16d29m27.43"],
     "SNU":   ["N47d52m29.55", "E16d17m18.37"],
     "STO":   ["N48d25m01.00", "E16d01m06.00"],
@@ -311,6 +313,7 @@
     "WW389": ["N48d07m05.00", "E16d53m00.00"],
     "WW390": ["N48d00m40.43", "E17d02m11.52"],
 
+    "WW450": ["N47d53m40.00", "E15d28m51.00"],
     "WW650": ["N48d13m09.05", "E16d14m07.70"],
     "WW651": ["N48d14m01.04", "E16d11m25.92"],
     "WW652": ["N48d16m06.33", "E16d05m06.38"],
@@ -734,21 +737,103 @@
       },
      "body": [["PESAT", "A60+|S250"], ["WW991", "A70|S250"], ["WW989", "A60+|S250"], ["WW981", "A60|S250"], ["WW979", "A60-|S250"], ["WW977", "A60-|S250"], ["WW975", "A60-|S250"], ["WW974", "A60-|S250"], ["WW973", "A40+|S250"], ["WW972", "A40|S250"], ["WW971", "A30-|S250"], ["WW970", "A30-|S250"], ["RW34", "A50-|S250"]],
      "draw": [["PESAT", "WW991", "WW989", "WW981", "WW979", "WW977", "WW975", "WW974", "WW973", "WW972", "WW971", "WW970"]]
+    },
+    "LANUX6W": {
+      "icao": "LANUX6W",
+      "name": "Lanux six whiskey arrival",
+      "transitions": {
+        "LANUX": ["_LANUX140000"]
+      },
+      "body": [["LANUX", "A150-|S330"], ["NERDU", "A60-|S250"]],
+      "draw": ["LANUX", "NERDU"]
+    },
+    "MASUR2W": {
+      "icao": "MASUR2W",
+      "name": "Masur two whiskey arrival",
+      "transitions": {
+        "MASUR": ["_MASUR272009"]
+      },
+      "body": [["MASUR", "A170-|S330"], ["TEMTA", "A60-|S250"], "NERDU"],
+      "draw": [["MASUR", "TEMTA", "NERDU"]]
+    },
+    "GAMLI5W": {
+      "icao": "GAMLI5W",
+      "name": "Gamli five whiskey arrival",
+      "transitions": {
+        "GAMLI": ["LIMRA"]
+      },
+      "body": [["GAMLI", "A60+|S250+"], ["BARUG", "A170-|S330"], ["WW450", "A90-|S250"], ["BALAD", "A80-|S250"]],
+      "draw": [["GAMLI", "BARUG", "WW450", "BALAD"]]
+    },
+    "XANUT1W": {
+      "icao": "XANUT1W",
+      "name": "Xanut one whiskey arrival",
+      "transitions": {
+        "XANUT": ["_NIGSI202010"]
+      },
+      "body": [["NIGSI", "A180-|S330"], ["BALAD", "A80|S250"]],
+      "draw": [["NIGSI", "BALAD"]]
+    },
+    "NATEX1W": {
+      "icao": "NATEX1W",
+      "name": "Natex one whisky arrival",
+      "transitions": {
+        "NATEX": ["_NATEX080019"]
+      },
+      "body": [["NATEX", "A140-|S330-"], ["PESAT", "A60-|S250"]],
+      "draw": [["NATEX", "PESAT"]]
+    },
+    "MIKOV7W": {
+      "icao": "MIKOV7W",
+      "name": "Mikov seven whiskey arrival",
+      "transitions": {
+        "MIKOV": ["_MIKOV345020"]
+      },
+      "body": [["MIKOV", "A170-|S330"], ["MABOD", "A60-|S250"]],
+      "draw": [["MIKOV", "MABOD"]]
+    },
+    "REKLU1W": {
+      "icao": "REKLU1W",
+      "name": "Reklu one whiskey arrival",
+      "transitions": {
+        "REKLU": ["_REKLU262000"]
+      },
+      "body": [["REKLU", "A180|S250"], ["MABOD", "A60-|S250"]],
+      "draw": [["REKLU", "MABOD"]]
     }
    },
   "departures": {
     "airlines": [
-      ["aua", 20],
-      ["ber", 15],
-      ["baw", 5],
+      ["aar/cargo", 2],
+      ["adr", 5],
+      ["aee", 2],
+      ["afl", 3],
+      ["afr", 3],
+      ["aic/long", 1],
+      ["amc", 1],
+      ["asl", 2],
+      ["aua", 165],
+      ["aua/long", 10],
+      ["aui", 2],
+      ["azq", 2],
+      ["baw", 6],
+      ["bel", 3],
+      ["ber", 17],
+      ["bti", 2],
+      ["cca/long", 1],
+      ["cfg", 3],
+      ["clx", 2],
+      ["csn/cargo", 1],
+      ["ctn", 3],
+      ["dlh/cityline", 4],
       ["dlh", 10],
       ["ein", 1],
+      ["ely", 1],
+      ["eth", 1],
       ["ryr", 1],
       ["gwi", 10],
       ["klm", 5],
       ["ezy", 8],
-      ["aal/long", 3],
-      ["aca/long", 3],
       ["sas", 5],
       ["ual/long", 5]
     ],
@@ -761,56 +846,58 @@
   },
   "arrivals": [
     {
-      "_name":  "MABOD",
-      "speed":    250,
-      "fixes":    ["_MIKOV345020", "MIKOV", "MABOD"],
+      "_name":  "MIKOV",
+      "speed":    450,
+      "route":    "MIKOV.MIKOV7W.LOWW",
       "airlines":  [
         ["aua", 10],
+        ["aua/long", 2],
         ["ber", 10],
         ["dlh", 10],
         ["gwi", 10],
         ["sas", 5],
         ["ezy", 7],
-        ["ual/long", 5],
-        ["aca/long", 5],
-        ["aal/long", 5]
+        ["ual/long", 5]
       ],
       "type": "surge",
       "entrail": [12, 22],
-      "frequency": 15,
-      "altitude":  10000
+      "frequency": 25,
+      "altitude":  25000
     },
     {
-      "_name":  "PESAT",
-      "speed":    250,
-      "fixes":   ["_NATEX080019", "NATEX", "PESAT", "WW991"],
+      "_name":  "NATEX",
+      "speed":    450,
+      "route":   "NATEX.NATEX1W.LOWW",
       "airlines":  [
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 5],
         ["ber", 10]
       ],
       "type": "random",
       "frequency": 5,
-      "altitude":  10000
+      "altitude":  25000
     },
     {
-      "_name":  "BALAD",
-      "speed":    250,
-      "fixes":    ["_NIGSI202010", "NIGSI", "BALAD"],
+      "_name":  "XANUT",
+      "_combines": "OBUTI1W, GBG5W, GRZ6W, ABTAN1W, XANUT1W",
+      "speed":    450,
+      "route":    "XANUT.XANUT1W.LOWW",
       "airlines":  [
         ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 5],
         ["ber", 10]
       ],
       "type": "surge",
       "entrail": [15, 30],
-      "frequency": 12,
-      "altitude": 10000
+      "frequency": 20,
+      "altitude": 25000
     },
     {
-      "_name":  "NERDU",
-      "speed":    250,
-      "fixes":    ["_MASUR272009", "MASUR", "TEMTA", "NERDU"],
+      "_name":  "MASUR",
+      "speed":    450,
+      "route":  "MASUR.MASUR2W.LOWW",
       "airlines":  [
         ["ein", 2],
         ["ryr", 2],
@@ -818,13 +905,74 @@
         ["dlh", 3],
         ["klm", 1],
         ["aua", 5],
+        ["aua/long", 1],
+        ["ezy", 1],
+        ["ber", 5],
+        ["gwi", 5]
+      ],
+      "type": "random",
+      "frequency": 3,
+      "altitude":  25000
+    },
+    {
+      "_name":  "REKLU",
+      "speed":    450,
+      "route":  "REKLU.REKLU1W.LOWW",
+      "airlines":  [
+        ["ein", 2],
+        ["ryr", 2],
+        ["baw", 4],
+        ["dlh", 3],
+        ["klm", 1],
+        ["aua", 5],
+        ["aua/long", 1],
+        ["ezy", 1],
+        ["ber", 5],
+        ["gwi", 5]
+      ],
+      "type": "random",
+      "frequency": 4,
+      "altitude":  25000
+    },
+    {
+      "_name":  "LANUX",
+      "speed":    450,
+      "route":    "LANUX.LANUX6W.LOWW",
+      "airlines":  [
+        ["ein", 2],
+        ["ryr", 2],
+        ["baw", 4],
+        ["dlh", 3],
+        ["klm", 1],
+        ["aua", 5],
+        ["aua/long", 1],
+        ["ezy", 1],
+        ["ber", 5],
+        ["gwi", 5]
+      ],
+      "type": "random",
+      "frequency": 3,
+      "altitude":  25000
+    },
+    {
+      "_name":  "GAMLI",
+      "speed":    450,
+      "route":  "GAMLI.GAMLI5W.LOWW",
+      "airlines":  [
+        ["ein", 2],
+        ["ryr", 2],
+        ["baw", 4],
+        ["dlh", 3],
+        ["klm", 1],
+        ["aua", 5],
+        ["aua/long", 1],
         ["ezy", 1],
         ["ber", 5],
         ["gwi", 5]
       ],
       "type": "random",
       "frequency": 5,
-      "altitude":  10000
+      "altitude":  25000
     }
   ]
 }
