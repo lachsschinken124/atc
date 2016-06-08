@@ -185,6 +185,7 @@ function airline_init() {
   airline_load("ETH");
   airline_load("EXS");
   airline_load("EVA");
+  airline_load("EWG");
   airline_load("EZY");
   airline_load("FAB");
   airline_load("FASTGA");
