@@ -218,6 +218,8 @@ function airline_init() {
   airline_load("LIGHTGA");
   airline_load("LLR");
   airline_load("LNI");
+  airline_load("LOT");
+  airline_load("LZB");
   airline_load("MON");
   airline_load("MOV");
   airline_load("NAX");

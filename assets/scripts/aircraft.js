@@ -3281,6 +3281,7 @@ function aircraft_init() {
   aircraft_load("conc");
   aircraft_load("rj85");
   aircraft_load("rj1h");
+  aircraft_load("rj70");
   aircraft_load("d328");
   aircraft_load("dhc6");
   aircraft_load("sf34");
