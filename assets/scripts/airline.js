@@ -193,6 +193,7 @@ function airline_init() {
   airline_load("FDX");
   airline_load("FFT");
   airline_load("FLG");
+  airline_load("FPO");
   airline_load("FWI");
   airline_load("GIA");
   airline_load("GJS");
