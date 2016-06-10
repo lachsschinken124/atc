@@ -744,7 +744,7 @@
       "transitions": {
         "LANUX": ["_LANUX140000"]
       },
-      "body": [["LANUX", "A150-|S330"], ["NERDU", "A60-|S250"]],
+      "body": [["LANUX", "A150-|S330"], ["NERDU", "A60-|S200"]],
       "draw": ["LANUX", "NERDU"]
     },
     "MASUR2W": {
@@ -753,7 +753,7 @@
       "transitions": {
         "MASUR": ["_MASUR272009"]
       },
-      "body": [["MASUR", "A170-|S330"], ["TEMTA", "A60-|S250"], "NERDU"],
+      "body": [["MASUR", "A170-|S330"], ["TEMTA", "A60-|S200"], "NERDU"],
       "draw": [["MASUR", "TEMTA", "NERDU"]]
     },
     "GAMLI5W": {
@@ -762,7 +762,7 @@
       "transitions": {
         "GAMLI": ["LIMRA"]
       },
-      "body": [["GAMLI", "A60+|S250+"], ["BARUG", "A170-|S330"], ["WW450", "A90-|S250"], ["BALAD", "A80-|S250"]],
+      "body": [["GAMLI", "A60+|S250+"], ["BARUG", "A170-|S330"], ["WW450", "A90-|S250"], ["BALAD", "A80-|S200"]],
       "draw": [["GAMLI", "BARUG", "WW450", "BALAD"]]
     },
     "XANUT1W": {
@@ -771,7 +771,7 @@
       "transitions": {
         "XANUT": ["_NIGSI202010"]
       },
-      "body": [["NIGSI", "A180-|S330"], ["BALAD", "A80|S250"]],
+      "body": [["NIGSI", "A180-|S330"], ["BALAD", "A80|S200"]],
       "draw": [["NIGSI", "BALAD"]]
     },
     "NATEX1W": {
@@ -780,7 +780,7 @@
       "transitions": {
         "NATEX": ["_NATEX080019"]
       },
-      "body": [["NATEX", "A140-|S330-"], ["PESAT", "A60-|S250"]],
+      "body": [["NATEX", "A140-|S330-"], ["PESAT", "A60-|S200"]],
       "draw": [["NATEX", "PESAT"]]
     },
     "MIKOV7W": {
@@ -789,7 +789,7 @@
       "transitions": {
         "MIKOV": ["_MIKOV345020"]
       },
-      "body": [["MIKOV", "A170-|S330"], ["MABOD", "A60-|S250"]],
+      "body": [["MIKOV", "A170-|S330"], ["MABOD", "A60-|S200"]],
       "draw": [["MIKOV", "MABOD"]]
     },
     "REKLU1W": {
@@ -798,7 +798,7 @@
       "transitions": {
         "REKLU": ["_REKLU262000"]
       },
-      "body": [["REKLU", "A180|S250"], ["MABOD", "A60-|S250"]],
+      "body": [["REKLU", "A180|S250"], ["MABOD", "A60-|S200"]],
       "draw": [["REKLU", "MABOD"]]
     }
    },
