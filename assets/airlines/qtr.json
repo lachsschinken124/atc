@@ -1,0 +1,20 @@
+{
+  "name": "Qatar Airways",
+  "callsign": {
+    "name": "Qatari",
+    "length": 4
+  },
+  "fleets": {
+    "default": [
+      ["A319", 2],
+      ["A320", 39],
+      ["A321", 8]
+    ],
+    "long": [
+      ["A332", 15],
+      ["A333", 13],
+      ["A346", 4],
+      ["A359", 8]
+    ]
+  }
+}
