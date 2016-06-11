@@ -1,8 +1,8 @@
 {
-  "name": "Airbus A340-600",
-  "icao": "A346",
+  "name": "Airbus A350-900",
+  "icao": "A359",
   "engines": {
-    "number": 4,
+    "number": 2,
     "type": "J"
   },
   "weightclass": "H",
@@ -11,24 +11,24 @@
     "lahso": 9,
     "recat": "B"
   },
-  "ceiling": 41000,
+  "ceiling": 43100,
   "rate": {
-    "climb":      3500,
-    "descent":    2000,
+    "climb":      3000,
+    "descent":    2500,
     "accelerate": 6,
     "decelerate": 4
   },
   "runway": {
-    "takeoff": 3.200,
-    "landing": 2.300
+    "takeoff": 2.200,
+    "landing": 1.966
   },
   "speed":{
-    "min":     125,
-    "landing": 140,
-    "cruise":  450,
+    "min":     130,
+    "landing": 155,
+    "cruise":  488,
     "cruiseM": null,
-    "max":     490,
-    "maxM":    0.83
+    "max":     510,
+    "maxM":    null
   },
   "capability": {
     "ils": true,

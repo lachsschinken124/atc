@@ -3168,6 +3168,7 @@ function aircraft_init() {
   aircraft_load("a333");
   aircraft_load("a343");
   aircraft_load("a346");
+  aircraft_load("a359");
   aircraft_load("a388");
 
   // ANTONOV
