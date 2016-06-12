@@ -849,9 +849,21 @@
       ["oaw", 2],
       ["pgt", 3],
       ["qtr", 1],
-      ["ryr", 1],
-      ["sas", 5],
-      ["ual/long", 5]
+      ["rja", 1],
+      ["rot", 3],
+      ["sas", 1],
+      ["sdm", 1],
+      ["swr", 3],
+      ["sxd", 2],
+      ["tap", 2],
+      ["tay", 3],
+      ["thy", 7],
+      ["tra", 1],
+      ["tui", 1],
+      ["tvf", 1],
+      ["uae", 3],
+      ["ups", 6],
+      ["vlg", 3]
     ],
     "destinations": [
       "LANUX", "LEDVA", "ADAMA", "STEIN", "OSPEN", "SITNI", "DITIS", "KOXER", "LUGIM", "MOTIX", "SASAL", "SNU", "UMBIL", "WGM"
