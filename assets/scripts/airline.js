@@ -163,6 +163,7 @@ function airline_init() {
   airline_load("BER");
   airline_load("BTK");
   airline_load("BWA");
+  airline_load("CAL");
   airline_load("CCA");
   airline_load("CES");
   airline_load("CESSNA");
@@ -215,6 +216,7 @@ function airline_init() {
   airline_load("KLC");
   airline_load("KLM");
   airline_load("LAN");
+  airline_load("LGL");
   airline_load("LIGHTGA");
   airline_load("LLR");
   airline_load("LNI");
@@ -254,6 +256,7 @@ function airline_init() {
   airline_load("SXD");
   airline_load("TAM");
   airline_load("TAP");
+  airline_load("TAR");
   airline_load("TAY");
   airline_load("TCF");
   airline_load("TCX");
