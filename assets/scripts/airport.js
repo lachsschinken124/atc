@@ -114,7 +114,7 @@ zlsa.atc.ArrivalBase = Fiber.extend(function(base) {
       });
 
       if(timeout_flag) {
-        this.timeout = game_timeout(this.spawnAircraft, 
+        this.timeout = game_timeout(this.spawnAircraft,
           this.nextInterval(), this, [null, true]);
       }
     },
@@ -238,7 +238,7 @@ zlsa.atc.ArrivalWave = zlsa.atc.ArrivalBase.extend(function(base) {
       if(min_interval < entrail_interval) {
         var diff = entrail_interval - min_interval;
         if(diff <= 3600/this.variation) {  // can reduce variation to achieve acceptable spawn rate
-          log("Requested arrival rate variation of +/-"+this.variation+" acph reduced to " + 
+          log("Requested arrival rate variation of +/-"+this.variation+" acph reduced to " +
             "maintain minimum of "+entrail_dist+" miles entrail on arrival stream following " +
             "route "+$.map(this.fixes,function(v){return v.fix;}).join('-'), LOG_WARNING);
           this.variation = this.variation - 3600/diff; // reduce the variation
@@ -271,7 +271,7 @@ zlsa.atc.ArrivalWave = zlsa.atc.ArrivalBase.extend(function(base) {
  ** Arrival rate goes from very low and steeply increases to a
  ** sustained "arrival surge" of densely packed aircraft.
  ** o o o o o o o o o o - - - - - - - - - - - o o o o o o o o o o-----+ < - - - max arrival rate (n*this.factor)
- ** o                 o                       o                 o     |         
+ ** o                 o                       o                 o     |
  ** o                 o                       o                 o     |   x(this.factor)
  ** o                 o                       o                 o     |
  ** o - - - - - - - - o o o o o o o o o o o o o - - - - - - - - o o o-+ < - - - min arrival rate (n)
@@ -284,7 +284,7 @@ zlsa.atc.ArrivalSurge = zlsa.atc.ArrivalBase.extend(function(base) {
       this.offset = 0;          // Start at the beginning of the surge
       this.period = 1800;       // 30 minute cycle
       this.entrail = [5.5, 10]; // miles entrail during the surge [fast,slow]
-      
+
       // Calculated
       this.uptime = 0;      // time length of surge, in minutes
       this.acph_up = 0;     // arrival rate when "in the surge"
@@ -346,7 +346,7 @@ zlsa.atc.ArrivalSurge = zlsa.atc.ArrivalBase.extend(function(base) {
       if(done >= 1) {
         this.cycleStart += this.period;
         return interval_up;
-      }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+      }
       if(t <= this.uptime) {  // elevated spawn rate
         return interval_up;
       }
@@ -603,6 +603,8 @@ var Airport=Fiber.extend(function() {
     init: function(options) {
       if(!options) options={};
 
+      this.loaded   = false;
+      this.loading  = false;
       this.name     = null;
       this.icao     = null;
       this.radio    = null;
@@ -640,9 +642,6 @@ var Airport=Fiber.extend(function() {
       this.initial_alt = 5000;
 
       this.parse(options);
-      if(options.url) {
-        this.load(options.url);
-      }
     },
     getWind: function() {
       var wind = clone(this.wind);
@@ -695,7 +694,7 @@ var Airport=Fiber.extend(function() {
         var apt = this;
         this.ctr_radius = Math.max.apply(Math, $.map(this.perimeter.poly, function(v) {return vlen(vsub(v.position,new Position(apt.rr_center, apt.position, apt.magnetic_north).position));}));
       }
-      
+
       if(data.runways) {
         for(var i in data.runways) {
           data.runways[i].reference_position = this.position;
@@ -731,7 +730,7 @@ var Airport=Fiber.extend(function() {
           }
         }
       }
-      
+
       if(data.stars) this.stars = data.stars;
       if(data.airways) this.airways = data.airways;
 
@@ -761,7 +760,7 @@ var Airport=Fiber.extend(function() {
           var coords = obj.coordinates,
               coords_max = coords[0],
               coords_min = coords[0];
-              
+
           for (var i in coords) {
             var v = coords[i]; //.position;
             coords_max = [Math.max(v[0], coords_max[0]), Math.max(v[1], coords_max[1])];
@@ -822,9 +821,39 @@ var Airport=Fiber.extend(function() {
       }
     },
     set: function() {
+      if (!this.loaded) {
+        this.load();
+        return;
+      }
+
+      localStorage['atc-last-airport'] = this.icao;
+
+      prop.airport.current = this;
+
+      $('#airport')
+        .text(this.icao.toUpperCase())
+        .attr("title", this.name);
+
+      prop.canvas.draw_labels = true;
+      $('.toggle-labels').toggle(
+        !$.isEmptyObject(this.maps));
+
+      $('.toggle-restricted-areas').toggle(
+        (this.restricted_areas || []).length > 0);
+
+      $('.toggle-sids').toggle(
+        !$.isEmptyObject(this.sids));
+
+      prop.canvas.dirty = true;
+
+      $('.toggle-terrain').toggle(
+        !$.isEmptyObject(this.terrain));
+
+      game_reset_score();
       this.start = game_time();
       this.updateRunway();
       this.addAircraft();
+      update_run(true);
     },
     unset: function() {
       for(var i=0;i<this.arrivals.length;i++) {
@@ -894,7 +923,7 @@ var Airport=Fiber.extend(function() {
         $.each(multipoly, function(i, poly) {
           // multipoly contains several polys
           // each poly has 1st outer ring and other rings are holes
-          apt.terrain[ele].push($.map(poly, function(line_string) { 
+          apt.terrain[ele].push($.map(poly, function(line_string) {
             return [
               $.map(line_string,
                 function(pt) {
@@ -909,40 +938,47 @@ var Airport=Fiber.extend(function() {
       }
     },
     loadTerrain: function() {
-      var terrain = new Content({
-        type: "json",
-        url:  'assets/airports/terrain/' + this.icao.toLowerCase() + '.geojson',
-        that: this,
-        callback: function(status, data) {
-          if(status == "ok") {
-            try {
-              log('Parsing terrain');
-              this.parseTerrain(data);
-            }
-            catch (e) {
-              log(e.message);
-            }
+      $.getJSON('assets/airports/terrain/' + this.icao.toLowerCase() + '.geojson')
+        .done(function (data) {
+          try {
+            log('Parsing terrain');
+            this.parseTerrain(data);
           }
-        }
-      });
+          catch (e) {
+            log(e.message);
+          }
+          this.loading = false;
+          this.loaded = true;
+          this.set();
+        }.bind(this))
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          this.loading = false;
+          console.error("Unable to load airport/terrain/" + this.icao
+                        + ": " + textStatus);
+          prop.airport.current.set();
+        }.bind(this));
     },
-    load: function(url) {
-      this.content = new Content({
-        type: "json",
-        url: url,
-        that: this,
-        callback: function(status, data) {
-          if(status == "ok") {
-            try {
-              log('Parsing data');
-              this.parse(data);
-            }
-            catch (e) {
-              log(e.message);
-            }
-          }
-        }
-      });
+    load: function() {
+      if (this.loaded)
+        return;
+
+      update_run(false);
+      this.loading = true;
+      $.getJSON("assets/airports/"+this.icao.toLowerCase()+".json")
+        .done(function (data) {
+          this.parse(data);
+          if (this.has_terrain)
+            return;
+          this.loading = false;
+          this.loaded = true;
+          this.set();
+        }.bind(this))
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          this.loading = false;
+          console.error("Unable to load airport/" + this.icao
+                        + ": " + textStatus);
+          prop.airport.current.set();
+        }.bind(this));
     },
     getRestrictedAreas: function() {
       return this.restricted_areas || null;
@@ -965,7 +1001,7 @@ var Airport=Fiber.extend(function() {
             fixes.push([sid.rwy[rwy][i], null]);
           else fixes.push(sid.rwy[rwy][i]);
         }
-      
+
       // body portion
       if(sid.hasOwnProperty("body"))
         for(var i=0; i<sid.body.length; i++) {
@@ -973,7 +1009,7 @@ var Airport=Fiber.extend(function() {
             fixes.push([sid.body[i], null]);
           else fixes.push(sid.body[i]);
         }
-      
+
       // transition portion
       if(sid.hasOwnProperty("transitions"))
         for(var i=0; i<sid.transitions[trxn].length; i++) {
@@ -1154,42 +1190,48 @@ function airport_init_pre() {
 }
 
 function airport_init() {
-  airport_load("ebbr");
-  airport_load("eddf");
-  airport_load("eddh");
-  airport_load("eddm");
-  airport_load("eddt");
-  airport_load("egcc");
-  airport_load("egkk");
-  airport_load("eglc");
-  airport_load("egll");
-  airport_load("eham");
-  airport_load("eidw");
-  airport_load("einn");
-  airport_load("engm");
-  airport_load("kbos");
-  airport_load("kdca");
-  airport_load("kjfk");
-  airport_load("klax");
-  airport_load("klax90");
-  airport_load("kmia");
-  airport_load("kmsp");
-  airport_load("ksan");
-  airport_load("ksea");
-  airport_load("ksfo");
-  airport_load("loww");
-  airport_load("ltba");
-  airport_load("omdb");
-  airport_load("saez");
-  airport_load("sbgl");
-  airport_load("sbgr");
-  airport_load("tncm");
-  airport_load("uudd");
-  airport_load("vecc");
-  airport_load("vhhh");
-  airport_load("vidp");
-  airport_load("wiii");
-  airport_load("wimm");
+  airport_load('ebbr', "easy", "Brussels-National &#9983");
+  airport_load('eddf', "medium", "Frankfurt Airport");
+  airport_load('eddh', "easy", "Hamburg Airport");
+  airport_load('eddm', "beginner", "Franz Josef Strauß International Airport");
+  airport_load('eddt', "medium", "Berlin Tegel Airport");
+  airport_load('egcc', "hard", "Manchester Airport");
+  airport_load('egkk', "easy", "London Gatwick Airport");
+  airport_load('eglc', "medium", "London City Airport");
+  airport_load('egll', "hard", "London Heathrow Airport");
+  airport_load('eham', "medium", "Amsterdam Airport Schiphol");
+  airport_load('eidw', "easy", "Dublin Airport");
+  airport_load('einn', "easy", "Shannon Airport");
+  airport_load('ekch', "medium", "Copenhagen Kastrup Airport");
+  airport_load('engm', "easy", "Oslo Gardermoen International Airport");
+  airport_load('espa', "easy", "Luleå Airport");
+  airport_load('kbos', "medium", "Boston Logan International Airport");
+  airport_load('kdca', "medium", "Reagan National Airport");
+  airport_load('kjfk', "hard", "John F Kennedy International Airport &#9983");
+  airport_load('klax90', "medium", "Los Angeles International Airport 1990");
+  airport_load('klax', "medium", "Los Angeles International Airport");
+  airport_load('kmia', "medium", "Miami International Airport &#9983");
+  airport_load('kmsp', "hard", "Minneapolis/St. Paul International Airport &#9983");
+  airport_load('ksan', "easy", "San Diego International Airport");
+  airport_load('ksea', "medium", "Seattle-Tacoma International Airport &#9983");
+  airport_load('ksfo', "medium", "San Francisco International Airport &#9983");
+  airport_load('loww', "medium", "Vienna International Airport");
+  airport_load('ltba', "hard", "Atatürk International Airport &#9983");
+  airport_load('omaa', "medium", "Abu Dhabi International Airport");
+  airport_load('omdb', "hard", "Dubai International Airport");
+  airport_load('othh', "hard", "Doha Hamad International Airport");
+  airport_load('saez', "medium", "Aeropuerto Internacional Ministro Pistarini");
+  airport_load('sbgl', "beginner", "Aeroporto Internacional Tom Jobim");
+  airport_load('sbgr', "beginner", "Aeroporto Internacional de São Paulo/Guarulhos");
+  airport_load('tncm', "easy", "Princess Juliana International Airport");
+  airport_load('uudd', "easy", "Moscow Domodedovo Airport");
+  airport_load('vecc', "medium", "Kolkata Netaji Subhas Chandra Bose Int'l");
+  airport_load('vhhh', "medium", "Hong Kong Chep Lap Kok International Airport");
+  airport_load('vidp', "hard", "Indira Gandhi International Airport");
+  airport_load('wiii', "medium", "Soekarno-Hatta International Airport");
+  airport_load('wimm', "easy", "Kuala Namu International Airport");
+  airport_load('wmkp', "medium", "Pulau Pinang International Airport");
+  airport_load('wsss', "hard", "Singapore Changi International Airport");
 }
 
 function airport_ready() {
@@ -1197,13 +1239,15 @@ function airport_ready() {
   else airport_set();
 }
 
-function airport_load(icao) {
+function airport_load(icao,level,name) {
   icao = icao.toLowerCase();
   if(icao in prop.airport.airports) {
     console.log(icao + ": already loaded");
     return;
   }
-  var airport=new Airport({icao: icao, url: "assets/airports/"+icao+".json"});
+  var airport=new Airport({icao: icao,
+                           level: level,
+                           name: name});
   airport_add(airport);
   return airport;
 }
@@ -1219,40 +1263,18 @@ function airport_set(icao) {
   }
   icao = icao.toLowerCase();
 
-  localStorage['atc-last-airport'] = icao;
   if(!(icao in prop.airport.airports)) {
     console.log(icao + ": no such airport");
     return;
   }
+
   if(prop.airport.current) {
     prop.airport.current.unset();
     aircraft_remove_all();
   }
-  prop.airport.current = prop.airport.airports[icao];
-  prop.airport.current.set();
 
-  var airport = prop.airport.current;
-
-  $('#airport')
-    .text(prop.airport.current.icao.toUpperCase())
-    .attr("title", airport.name);
-
-  prop.canvas.draw_labels = true;
-  $('.toggle-labels').toggle(
-    !$.isEmptyObject(prop.airport.current.maps));
-
-  $('.toggle-restricted-areas').toggle(
-    (prop.airport.current.restricted_areas || []).length > 0);
-
-  $('.toggle-sids').toggle(
-    !$.isEmptyObject(prop.airport.current.sids));
-
-  prop.canvas.dirty = true;
-
-  $('.toggle-terrain').toggle(
-    !$.isEmptyObject(prop.airport.current.terrain));
-
-  game_reset_score();
+  var newAirport = prop.airport.airports[icao];
+  newAirport.set();
 }
 
 function airport_get(icao) {

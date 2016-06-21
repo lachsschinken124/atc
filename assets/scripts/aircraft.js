@@ -247,7 +247,7 @@ zlsa.atc.Conflict = Fiber.extend(function() {
 
       // Update Conflicts
       if (conflict) this.conflicts.proximityConflict = true;
-      else this.conflicts.proximityConflict = false;      
+      else this.conflicts.proximityConflict = false;
       if (violation) this.violations.proximityViolation = true;
       else this.violations.proximityViolation = false;
     }
@@ -261,6 +261,8 @@ var Model=Fiber.extend(function() {
     init: function(options) {
       if(!options) options={};
 
+      this.loading = true;
+      this.loaded = false;
       this.name = null;
       this.icao = null;
 
@@ -288,6 +290,8 @@ var Model=Fiber.extend(function() {
         cruise:  0
       };
 
+      this._pendingAircraft = [];
+
       this.parse(options);
 
       if(options.url) this.load(options.url);
@@ -312,16 +316,60 @@ var Model=Fiber.extend(function() {
       if(data.speed) this.speed = data.speed;
     },
     load: function(url) {
-      this.content = new Content({
-        type: "json",
-        url: url,
-        that: this,
-        callback: function(status, data) {
-          if(status == "ok") {
-            this.parse(data);
-          }
+      $.getJSON(url)
+        .done(function (data) {
+          this.parse(data);
+          this.loading = false;
+          this.loaded = true;
+          this._generatePendingAircraft();
+        }.bind(this))
+        .fail(function (jqXHR, textStatus, errorThrown) {
+          this.loading = false;
+          this._pendingAircraft = [];
+          console.error("Unable to load aircraft/" + this.icao
+                        + ": " + textStatus);
+        }.bind(this));
+    },
+
+    /**
+     * Generate a new aircraft of this model
+     *
+     * Handles the case where this model may be asynchronously loaded
+     */
+    generateAircraft: function(options) {
+      if (!this.loaded) {
+        if (this.loading) {
+          this._pendingAircraft.push(options);
+          return true;
         }
-      });
+        else {
+          console.warn("Unable to spawn aircraft/" + options.icao
+                       + " as loading failed");
+          return false;
+        }
+      }
+      return this._generateAircraft(options);
+    },
+
+    /**
+     * Actual implementation of generateAircraft
+     */
+    _generateAircraft: function(options) {
+      options.model = this;
+      var aircraft = new Aircraft(options);
+      prop.aircraft.list.push(aircraft);
+      console.log("Spawning " + options.category + " : " + aircraft.getCallsign());
+      return true;
+    },
+
+    /**
+     * Generate aircraft which were queued while the model loaded
+     */
+    _generatePendingAircraft: function() {
+      $.each(this._pendingAircraft, function (idx, options) {
+        this._generateAircraft(options);
+      }.bind(this));
+      this._pendingAircraft = null;
     },
   };
 });
@@ -507,12 +555,12 @@ zlsa.atc.Leg = Fiber.extend(function(data, fms) {
           log("Unable to follow "+airway+" from "+start+" to "+end, LOG_WARNING);
           return;
         }
-        
+
         // Build list of fixes, depending on direction traveling along airway
         var fixes = [], readFwd = (awy.indexOf(end) > awy.indexOf(start));
         if(readFwd) for(var f=awy.indexOf(start); f<=awy.indexOf(end); f++) fixes.push(awy[f]);
         else for(var f=awy.indexOf(start); f>=awy.indexOf(end); f--) fixes.push(awy[f]);
-        
+
         // Add list of fixes to this.waypoints
         this.waypoints = [];
         this.waypoints = $.map(fixes, function(f){return new zlsa.atc.Waypoint({fix:f}, fms);});
@@ -564,12 +612,12 @@ zlsa.atc.AircraftFlightManagementSystem = Fiber.extend(function() {
         tfc:  null,   // Traffic (another airplane)
         anything:  false   // T/F flag for if anything is being "followed"
       };
-      
+
       // set initial
       this.fp.altitude = clamp(1000, options.model.ceiling, 60000);
-      if(options.aircraft.category == "arrival") 
+      if(options.aircraft.category == "arrival")
         this.prependLeg({route:"KDBG"});
-      else if(options.aircraft.category == "departure") 
+      else if(options.aircraft.category == "departure")
         this.prependLeg({route:airport_get().icao});
       this.update_fp_route();
     },
@@ -691,7 +739,7 @@ zlsa.atc.AircraftFlightManagementSystem = Fiber.extend(function() {
             var curr = this.currentWaypoint();
             if(prev && !curr.altitude) curr.altitude = prev.altitude;
             if(prev && !curr.speed) curr.speed = prev.speed;
-            
+
             return true;
           }
         }
@@ -868,7 +916,7 @@ zlsa.atc.AircraftFlightManagementSystem = Fiber.extend(function() {
                 || !Object.keys(ap().airways).indexOf(pieces[1])) return; // invalid procedure
               a.push(pieces[j-1] + '.' + pieces[j] + pieces[j+1]);
             }
-          }   
+          }
         }
         route = route.concat(a);  // push the properly reformatted multilink
       }
@@ -952,7 +1000,7 @@ zlsa.atc.AircraftFlightManagementSystem = Fiber.extend(function() {
     },
 
     /** Climbs aircraft in compliance with the SID they're following
-     ** Adds altitudes and speeds to each waypoint that are as high as 
+     ** Adds altitudes and speeds to each waypoint that are as high as
      ** possible without exceeding any the following:
      **    - (alt) airspace ceiling ('ctr_ceiling')
      **    - (alt) filed cruise altitude
@@ -1194,30 +1242,30 @@ var Aircraft=Fiber.extend(function() {
       this.altitude     = 0;          // Altitude, ft MSL
       this.speed        = 0;          // Indicated Airspeed (IAS), knots
       this.groundSpeed  = 0;          // Groundspeed (GS), knots
-      this.groundTrack  = 0;          // 
-      this.ds           = 0;          // 
-      this.takeoffTime  = 0;          // 
+      this.groundTrack  = 0;          //
+      this.ds           = 0;          //
+      this.takeoffTime  = 0;          //
       this.rwy_dep      = null;       // Departure Runway (to use, currently using, or used)
       this.rwy_arr      = null;       // Arrival Runway (to use, currently using, or used)
       this.approachOffset = 0;        // Distance laterally from the approach path
       this.approachDistance = 0;      // Distance longitudinally from the threshold
       this.radial       = 0;          // Angle from airport center to aircraft
-      this.distance     = 0;          // 
+      this.distance     = 0;          //
       this.destination  = null;       // Destination they're flying to
       this.trend        = 0;          // Indicator of descent/level/climb (1, 0, or 1)
       this.history      = [];         // Array of previous positions
-      this.restricted   = {list:[]};  // 
-      this.notice       = false;      // Whether aircraft 
-      this.warning      = false;      // 
+      this.restricted   = {list:[]};  //
+      this.notice       = false;      // Whether aircraft
+      this.warning      = false;      //
       this.hit          = false;      // Whether aircraft has crashed
-      this.taxi_next    = false;      // 
-      this.taxi_start   = 0;          // 
+      this.taxi_next    = false;      //
+      this.taxi_start   = 0;          //
       this.taxi_time    = 3;          // Time spent taxiing to the runway. *NOTE* this should be INCREASED to around 60 once the taxi vs LUAW issue is resolved (#406)
       this.rules        = "ifr";      // Either IFR or VFR (Instrument/Visual Flight Rules)
       this.inside_ctr   = false;      // Inside ATC Airspace
       this.datablockDir = -1;         // Direction the data block points (-1 means to ignore)
       this.conflicts    = {};         // List of aircraft that MAY be in conflict (bounding box)
-      
+
       if (prop.airport.current.terrain) {
         var terrain = prop.airport.current.terrain;
         this.terrain_ranges = {};
@@ -1231,7 +1279,7 @@ var Aircraft=Fiber.extend(function() {
       } else {
         this.terrain_ranges = false;
       }
-      
+
       // Set to true when simulating future movements of the aircraft
       // Should be checked before updating global state such as score
       // or HTML.
@@ -1289,8 +1337,8 @@ var Aircraft=Fiber.extend(function() {
 
       this.emergency = {};
 
-      // Setting up links to restricted areas 
-      var ra = prop.airport.current.restricted_areas; 
+      // Setting up links to restricted areas
+      var ra = prop.airport.current.restricted_areas;
       for (var i in ra) {
         this.restricted.list.push({
           data: ra[i], range: null, inside: false});
@@ -1419,7 +1467,7 @@ var Aircraft=Fiber.extend(function() {
               prop.game.score.departure += 1;
             }
             else {
-              this.radioCall("leaving radar coverage without being cleared to " + 
+              this.radioCall("leaving radar coverage without being cleared to " +
                 this.fms.fp.route[1].split(".")[1],"dep",true)
               prop.game.score.departure -= 1;
             }
@@ -1472,7 +1520,7 @@ var Aircraft=Fiber.extend(function() {
       }
       else { // in lower stratosphere
         //re-do for lower stratosphere
-        //Reference: https://www.grc.nasa.gov/www/k-12/rocket/atmos.html 
+        //Reference: https://www.grc.nasa.gov/www/k-12/rocket/atmos.html
         //also recommend using graphing calc from desmos.com
         return this.model.rate.climb; // <-- NOT VALID! Just a placeholder!
       }
@@ -1490,7 +1538,7 @@ var Aircraft=Fiber.extend(function() {
       }
       else { // in lower stratosphere
         //re-do for lower stratosphere
-        //Reference: https://www.grc.nasa.gov/www/k-12/rocket/atmos.html 
+        //Reference: https://www.grc.nasa.gov/www/k-12/rocket/atmos.html
         //also recommend using graphing calc from desmos.com
         return this.model.rate.climb; // <-- NOT VALID! Just a placeholder!
       }
@@ -1509,11 +1557,11 @@ var Aircraft=Fiber.extend(function() {
               //instead are meant to NOT have the space that is required to properly
               //parse the command. Shortkeys take the format of (shortkey character)
               //followed by (command argument). Note that shortkeys MUST ALL HAVE FIRST
-              //CHARACTERS THAT ARE UNIQUE from each other, as that is how they are 
+              //CHARACTERS THAT ARE UNIQUE from each other, as that is how they are
               //currently being identified. Examples of valid commands:
               //'<250', '^6', '^6000', '.DUMBA'
             synonyms: [list of synonyms]},
-              //Note: synonyms can be entered into the command bar by users and they 
+              //Note: synonyms can be entered into the command bar by users and they
               //have the same effect as typing the actual command, and use the same
               //format as the full command. Examples of valid commands:
               //'altitude 5'=='c 5', land 16'=='l 16', 'fix DUMBA'='f DUMBA'
@@ -1595,7 +1643,7 @@ var Aircraft=Fiber.extend(function() {
           func: 'runTaxi',
           synonyms: ['w', 'taxi']}
       },
-    
+
     runCommand: function(command) {
       if (!this.inside_ctr)
         return true;
@@ -1635,7 +1683,7 @@ var Aircraft=Fiber.extend(function() {
           longCmdName = "heading";
         }
         else if(!skip) {  //normal logic
-          for(var k in this.COMMANDS) { 
+          for(var k in this.COMMANDS) {
             if(k == string) {  //input command is a valid command name (eg 'altitude')
               is_command = true;
               break;
@@ -1652,7 +1700,7 @@ var Aircraft=Fiber.extend(function() {
                     longCmdName = k;
                     break;
                   }
-                  else 
+                  else
                   {
                     if(this.COMMANDS[k].shortKey[m].length > 1 && this.COMMANDS[k].shortKey[m] == string.substr(0,this.COMMANDS[k].shortKey[m].length)) { //multi-char shortKey, matches input command
                       is_shortCommand = true;
@@ -1763,7 +1811,7 @@ var Aircraft=Fiber.extend(function() {
         });
       }
 
-      if (!call_func) 
+      if (!call_func)
         return ["fail", "not understood"];
 
       return this[call_func].apply(this, [data]);
@@ -1775,7 +1823,7 @@ var Aircraft=Fiber.extend(function() {
       var instruction = null;
       var incremental = false, amount = 0;
       switch(split.length) {  //number of elements in 'data'
-        case 1: 
+        case 1:
           if(isNaN(parseInt(split))) {  //probably using shortKeys
             if(split[0][0] == "\u2BA2") { //using '<250' format
               direction = "left";
@@ -1891,7 +1939,7 @@ var Aircraft=Fiber.extend(function() {
       // Construct the readback
       if(direction) instruction = "turn " + direction + " heading ";
       else instruction = "fly heading ";
-      if(incremental) 
+      if(incremental)
         var readback = {
           log: "turn " + amount + " degrees " + direction,
           say: "turn " + groupNumbers(amount) + " degrees " + direction};
@@ -1953,12 +2001,12 @@ var Aircraft=Fiber.extend(function() {
     runClearedAsFiled: function() {
       if(this.fms.clearedAsFiled()) {
         return ['ok',
-          {log: "cleared to destiantion via the " + airport_get().sids[this.destination].icao + 
-            " departure, then as filed" + ". Climb and maintain " + airport_get().initial_alt + 
+          {log: "cleared to destiantion via the " + airport_get().sids[this.destination].icao +
+            " departure, then as filed" + ". Climb and maintain " + airport_get().initial_alt +
             ", expect " + this.fms.fp.altitude + " 10 minutes after departure",
           say: "cleared to destination via the " + airport_get().sids[this.destination].name +
             " departure, then as filed" + ". Climb and maintain " + radio_altitude(
-            airport_get().initial_alt) + ", expect " + radio_altitude(this.fms.fp.altitude) + 
+            airport_get().initial_alt) + ", expect " + radio_altitude(this.fms.fp.altitude) +
             "," + radio_spellOut(" 10 ") + "minutes after departure"}];
       }
       else return [true, "unable to clear as filed"];
@@ -1968,7 +2016,7 @@ var Aircraft=Fiber.extend(function() {
       else if(this.fms.climbViaSID())
         return ['ok', {log: "climb via the " + this.fms.currentLeg().route.split('.')[1] + " departure",
           say: "climb via the " + airport_get().sids[this.fms.currentLeg().route.split('.')[1]].name + " departure"}];
-      
+
       if(fail) ui_log(true, this.getCallsign() + ", unable to climb via SID");
     },
     runDescendViaSTAR: function() {
@@ -2019,7 +2067,7 @@ var Aircraft=Fiber.extend(function() {
       if(data.length > 0) { // if anything still remains...
         for(var i=0; i<data.length; i++) {
           var fix = airport_get().getFix(data[i]);    // attempt to find data[i] as a fix
-          if(fix) { 
+          if(fix) {
             hold_fix = data[i].toUpperCase(); // if is a valid fix, set as the holding fix
             hold_fix_location = fix; break;   // if is a valid fix, set as the holding fix
           }
@@ -2102,15 +2150,15 @@ var Aircraft=Fiber.extend(function() {
       var a = this; // necessary to keep 'this' in scope during $.each()
 
       data = data.toUpperCase().split(/\s+/);
-      
-      var last_fix, fail,  
+
+      var last_fix, fail,
           fixes = $.map(data, function(fixname) {
             var fix = airport_get().getFix(fixname);
             if(!fix) {
               fail = ["fail", "unable to find fix called " + fixname];
               return;
             }
-            
+
             // to avoid repetition, compare name with the previous fix
             if (fixname == last_fix) return;
             last_fix = fixname;
@@ -2176,7 +2224,7 @@ var Aircraft=Fiber.extend(function() {
       if(!apt.stars.hasOwnProperty(star_id)) {
         return ["fail", "STAR name not understood"];
       }
-      
+
       this.fms.followSTAR(route);
 
       return ["ok", {log:"cleared to the " + apt.name + " via the " + star_id + " arrival",
@@ -2602,7 +2650,7 @@ var Aircraft=Fiber.extend(function() {
             if(offset[1] > 0.2 && abs(offset[0]) > 0.003 )
               this.target.heading = clamp(radians(-30), -12 * offset_angle, radians(30)) + angle;
             else this.target.heading = angle;
-            
+
             // Follow the glideslope
             this.target.altitude = glideslope_altitude;
           }
@@ -2874,7 +2922,7 @@ var Aircraft=Fiber.extend(function() {
       else {  // simple circular airspace boundary
         var inside = (this.distance <= airport_get().ctr_radius &&
                       this.altitude <= airport_get().ctr_ceiling);
-        if (inside != this.inside_ctr) this.crossBoundary(inside); 
+        if (inside != this.inside_ctr) this.crossBoundary(inside);
       }
     },
     updateWarning: function() {
@@ -2937,8 +2985,8 @@ var Aircraft=Fiber.extend(function() {
         $.each(this.restricted.list, function(k, v) {
           warning = warning || v.inside;
         })
-      } 
-      
+      }
+
       if (this.terrain_ranges && !this.isLanded()) {
         var terrain = prop.airport.current.terrain,
             prev_level = this.terrain_ranges[this.terrain_level],
@@ -2952,7 +3000,7 @@ var Aircraft=Fiber.extend(function() {
           }
           this.terrain_level = ele;
         }
-        
+
         for (var id in curr_ranges) {
           curr_ranges[id] -= this.ds;
           //console.log(curr_ranges[id]);
@@ -3149,136 +3197,6 @@ function aircraft_auto_toggle() {
 }
 
 function aircraft_init() {
-  // AIRBUS
-  aircraft_load("a306");
-  aircraft_load("a310");
-  aircraft_load("a318");
-  aircraft_load("a319");
-  aircraft_load("a320");
-  aircraft_load("a321");
-  aircraft_load("a332");
-  aircraft_load("a333");
-  aircraft_load("a343");
-  aircraft_load("a346");
-  aircraft_load("a359");
-  aircraft_load("a388");
-
-  // ANTONOV
-  aircraft_load("a124");
-  aircraft_load("an12");
-  aircraft_load("an24");
-  aircraft_load("an72");
-
-  // ATR
-  aircraft_load("at43");
-  aircraft_load("at45");
-  aircraft_load("at72");
-  aircraft_load("at76");
-
-  // BOEING
-  aircraft_load("b712");
-  aircraft_load("b722");
-  aircraft_load("b732");
-  aircraft_load("b733");
-  aircraft_load("b734");
-  aircraft_load("b735");
-  aircraft_load("b736");
-  aircraft_load("b737");
-  aircraft_load("b738");
-  aircraft_load("b739");
-  aircraft_load("b741");
-  aircraft_load("b742");
-  aircraft_load("b744");
-  aircraft_load("b748");
-  aircraft_load("b74s");
-  aircraft_load("b752");
-  aircraft_load("b753");
-  aircraft_load("b762");
-  aircraft_load("b763");
-  aircraft_load("b764");
-  aircraft_load("b772");
-  aircraft_load("b77l");
-  aircraft_load("b773");
-  aircraft_load("b77w");
-  aircraft_load("b788");
-  aircraft_load("b789");
-
-  // BOMBARDIER
-  aircraft_load("crj2");
-  aircraft_load("crj7");
-  aircraft_load("crj9");
-  aircraft_load("dh8a");
-  aircraft_load("dh8c");
-  aircraft_load("dh8d");
-
-  // CESSNA
-  aircraft_load("c172");
-  aircraft_load("c182");
-  aircraft_load("c208");
-  aircraft_load("c337");
-  aircraft_load("c402");
-  aircraft_load("c510");
-  aircraft_load("c550");
-  aircraft_load("c750");
-  
-  // EMBRAER
-  aircraft_load("e110");
-  aircraft_load("e120");
-  aircraft_load("e135");
-  aircraft_load("e145");
-  aircraft_load("e170");
-  aircraft_load("e190");
-  aircraft_load("e50p");
-  aircraft_load("e545");
-  aircraft_load("e55p");
-
-  // FOKKER
-  aircraft_load("f50" );
-  aircraft_load("f70" );
-  aircraft_load("f100");
-
-  // GENERAL AVIATION
-  aircraft_load("be36");
-  aircraft_load("bn2p");
-  aircraft_load("p28a");
-
-  // ILYUSHIN
-  aircraft_load("il76");
-  aircraft_load("il96");
-
-  // LOCKHEED-MARTIN
-  aircraft_load( "c5" );
-  aircraft_load("c130");
-  aircraft_load("l101");
-  aircraft_load("l410");
-
-  // MCDONNELL-DOUGLAS
-  aircraft_load("dc10");
-  aircraft_load("dc87");
-  aircraft_load("dc93");
-  aircraft_load("md11");
-  aircraft_load("md81");
-  aircraft_load("md82");
-  aircraft_load("md83");
-  aircraft_load("md87");
-  aircraft_load("md88");
-  aircraft_load("md90");
-
-  // SAAB
-  aircraft_load("sb20");
-  // TUPOLEV
-  aircraft_load("t154");
-  aircraft_load("t204");
-
-  // MISCELLANEOUS
-  aircraft_load("conc");
-  aircraft_load("rj85");
-  aircraft_load("rj1h");
-  aircraft_load("rj70");
-  aircraft_load("d328");
-  aircraft_load("dhc6");
-  aircraft_load("sf34");
-  aircraft_load("su95");
 }
 
 function aircraft_generate_callsign(airline_name) {
@@ -3303,25 +3221,8 @@ function aircraft_callsign_new(airline) {
 }
 
 function aircraft_new(options) {
-  if(!options.callsign) options.callsign = aircraft_callsign_new(options.airline);
-
-  if(!options.icao) {
-    options.icao = airline_get(options.airline).chooseAircraft(options.fleet);
-  }
-  var icao = options.icao.toLowerCase();
-
-  options.model = prop.aircraft.models[icao];
-  var aircraft = new Aircraft(options);
-
-  prop.aircraft.list.push(aircraft);
-  console.log("Spawning " + options.category + " : " + aircraft.getCallsign());
-}
-
-function aircraft_load(icao) {
-  icao = icao.toLowerCase();
-  var model = new Model({icao: icao, url: "assets/aircraft/"+icao+".json"});
-  aircraft_add(model);
-  return model;
+  var airline = airline_get(options.airline);
+  return airline.generateAircraft(options);
 }
 
 function aircraft_get_nearest(position) {
@@ -3465,4 +3366,15 @@ function aircraft_get_eid_by_callsign(callsign) {
     if(prop.aircraft.list[i].callsign == callsign.toLowerCase())
       return prop.aircraft.list[i].eid;
   return null;
+}
+
+function aircraft_model_get(icao) {
+  if (!(icao in prop.aircraft.models)) {
+    var model = new Model({
+      icao: icao,
+      url: "assets/aircraft/"+icao+".json",
+    });
+    prop.aircraft.models[icao] = model;
+  }
+  return prop.aircraft.models[icao];
 }
