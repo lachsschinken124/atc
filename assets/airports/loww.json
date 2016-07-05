@@ -760,7 +760,7 @@
       "transitions": {
         "GAMLI": ["LIMRA"]
       },
-      "body": [["GAMLI", "A60+|S250-+"], ["BARUG", "A170-|S330"], ["WW450", "A90-|S250-"], ["BALAD", "A80-|S250"]],
+      "body": [["GAMLI", "A60+|S330+"], ["BARUG", "A170-|S330"], ["WW450", "A90-|S250-"], ["BALAD", "A80-|S250"]],
       "draw": [["GAMLI", "BARUG", "WW450", "BALAD"]]
     },
     "XANUT1W": {
