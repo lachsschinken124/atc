@@ -749,7 +749,7 @@
       "icao": "MASUR2W",
       "name": "Masur two whiskey arrival",
       "transitions": {
-        "MASUR": ["_MASUR272509"]
+        "MASUR": ["_MASUR272009"]
       },
       "body": [["MASUR", "A170-|S330"], ["TEMTA", "A60-|S250"], "NERDU"],
       "draw": [["MASUR", "TEMTA", "NERDU"]]
@@ -794,7 +794,7 @@
       "icao": "REKLU1W",
       "name": "Reklu one whiskey arrival",
       "transitions": {
-        "REKLU": ["_REKLU262500"]
+        "REKLU": ["_REKLU262000"]
       },
       "body": [["REKLU", "A180|S250-"], ["MABOD", "A60-|S250"]],
       "draw": [["REKLU", "MABOD"]]
