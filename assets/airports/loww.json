@@ -922,7 +922,7 @@
         ["rot", 1]
       ],
       "type": "random",
-      "frequency": 4,
+      "frequency": 5,
       "altitude":  25000
     },
     {
@@ -975,7 +975,7 @@
         ["swr/long", 1]
       ],
       "type": "random",
-      "frequency": 3,
+      "frequency": 4,
       "altitude":  25000
     },
     {
@@ -988,7 +988,7 @@
         ["rot", 1]
       ],
       "type": "random",
-      "frequency": 1,
+      "frequency": 2,
       "altitude":  25000
     },
     {
@@ -1026,7 +1026,7 @@
         ["ups", 2]
       ],
       "type": "random",
-      "frequency": 3,
+      "frequency": 4,
       "altitude":  25000
     },
     {
